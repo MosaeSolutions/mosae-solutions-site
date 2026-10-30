@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mosae Solutions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Mosae Solutions ontwerpt, bouwt en onderhoudt websites voor bedrijven van elke omvang. Plan een vrijblijvend gesprek voor een voorstel op maat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Layout: "meldkamer" — een donkere controlekamer met rasterlijnen en één rood signaal voor alles wat live en urgent is. */
+  :root{
+    color-scheme:dark;
+    --ink:#0A0A0B;          /* achtergrond */
+    --coal:#121214;         /* panelen */
+    --graphite:#1B1C1F;     /* verhoogde vlakken */
+    --line:#2B2C30;
+    --line-soft:#1D1E21;
+    --bone:#EEECE8;         /* tekst */
+    --ash:#A1A3AA;          /* secundaire tekst */
+    --smoke:#7A7D86;        /* labels */
+    --signal:#E3342B;       /* merkrood */
+    --signal-hot:#FF4B3E;
+    --signal-btn:#C9261E;
+    --signal-wash:rgba(227,52,43,.10);
+    --signal-line:rgba(227,52,43,.38);
+    --signal-glow:rgba(227,52,43,.16);
+    --ok:#3FCF8E;
+    --grid:rgba(238,236,232,.035);
+    --glass:rgba(10,10,11,.84);
+    --shadow:rgba(0,0,0,.55);
+
+    --f-display:'Archivo','Arial Narrow',system-ui,sans-serif;
+    --f-body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --f-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--ink);color:var(--bone);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:70;background:var(--ink)}
+  ::selection{background:var(--signal);color:var(--bone)}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--signal-hot);outline-offset:3px;border-radius:4px}
+  svg.i{width:26px;height:26px;fill:none;stroke:var(--signal);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  .wrap{max-width:1200px;margin-inline:auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .display{font-family:var(--f-display);font-stretch:118%;font-weight:800;letter-spacing:-.02em;line-height:1;text-wrap:balance}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash)}
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--signal);border-radius:1px}
+  .h2{font-family:var(--f-display);font-stretch:115%;font-weight:800;font-size:clamp(28px,4.4vw,48px);line-height:1.05;letter-spacing:-.015em;margin-top:16px;text-wrap:balance;max-width:20ch}
+  .lead{color:var(--ash);font-size:clamp(16px,1.7vw,18px);margin-top:14px;max-width:60ch}
+  .lead.wide{max-width:84ch}
+  .red{color:var(--signal)}
+
+  /* PAGINA'S + binnenkomst-animatie */
+  .page{display:none}
+  .page.active{display:block}
+  .page.entering .rev{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+  /* KNOPPEN */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:15px;padding:14px 22px;border-radius:4px;border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
+  .btn .arr{transition:transform .2s}
+  .btn:hover .arr{transform:translateX(4px)}
+  .btn-red{background:var(--signal-btn);color:var(--bone)}
+  .btn-red:hover{background:var(--signal)}
+  .btn-line{background:transparent;color:var(--bone);border-color:var(--line)}
+  .btn-line:hover{border-color:var(--bone)}
+  .btn-sm{padding:10px 16px;font-size:14px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+
+  /* NAVIGATIE */
+  nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+  nav .bar{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo svg{width:34px;height:34px;flex:none}
+  .logo .wm{font-family:var(--f-display);font-stretch:125%;font-weight:800;font-size:17px;letter-spacing:.05em;line-height:1;color:var(--bone)}
+  .logo .wm small{display:block;font-family:var(--f-mono);font-stretch:100%;font-weight:400;font-size:9.5px;letter-spacing:.3em;color:var(--ash);margin-top:4px;text-transform:uppercase}
+  .navlinks{display:flex;align-items:center;gap:2px}
+  .navlinks a:not(.btn){position:relative;font-size:14.5px;font-weight:500;color:var(--ash);padding:8px 12px;transition:color .15s}
+  .navlinks a:not(.btn):hover,.navlinks a.curr:not(.btn){color:var(--bone)}
+  .navlinks a.curr:not(.btn)::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;background:var(--signal)}
+  .navlinks .btn{margin-left:14px}
+  .hamb{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:10px}
+  .hamb span{width:22px;height:2px;background:var(--bone);transition:transform .2s,opacity .2s}
+  #menu.open .hamb span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  #menu.open .hamb span:nth-child(2){opacity:0}
+  #menu.open .hamb span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  @media(max-width:1000px){
+    .hamb{display:flex}
+    .navlinks{position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--coal);border-bottom:1px solid var(--line);max-height:0;overflow:hidden;visibility:hidden;transition:max-height .3s ease,visibility 0s linear .3s}
+    #menu.open .navlinks{max-height:calc(100vh - 68px);overflow-y:auto;visibility:visible;transition:max-height .3s ease,visibility 0s}
+    #menu.open .navlinks{box-shadow:0 24px 40px var(--shadow)}
+    .navlinks a:not(.btn){padding:15px max(20px,env(safe-area-inset-right,0px)) 15px max(20px,env(safe-area-inset-left,0px));border-top:1px solid var(--line-soft);font-size:16px}
+    .navlinks a.curr:not(.btn)::after{left:0;right:auto;top:0;bottom:0;width:3px;height:auto}
+    .navlinks .btn{margin:14px max(20px,env(safe-area-inset-right,0px)) 18px max(20px,env(safe-area-inset-left,0px))}
+  }
+
+  /* HERO */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line-soft);background:radial-gradient(720px 440px at 80% 45%,var(--signal-glow),transparent 70%),var(--ink)}
+  .gridbg{position:relative}
+  .gridbg::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent);mask-image:linear-gradient(180deg,#000 30%,transparent)}
+  .hero-in{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:56px;align-items:center;padding-block:clamp(40px,5.5vw,72px)}
+  @media(max-width:980px){.hero-in{grid-template-columns:minmax(0,1fr);gap:44px}}
+  .badge{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;color:var(--bone);background:var(--coal);border:1px solid var(--line);padding:7px 13px;border-radius:999px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--signal);animation:pulse 1.8s infinite;flex:none}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 var(--signal-line)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+  .hero h1{font-size:clamp(36px,6.2vw,76px);margin-top:22px}
+  .hero .sub{color:var(--ash);font-size:clamp(16px,1.8vw,19px);max-width:52ch;margin-top:20px}
+  .promise{display:inline-flex;flex-wrap:wrap;gap:4px 8px;margin-top:26px;padding:12px 16px;border:1px solid var(--signal-line);background:var(--signal-wash);border-radius:6px;font-size:15.5px;color:var(--bone)}
+  .promise b{font-weight:600}
+  .promise + .proof{margin-top:28px}
+  .proof{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:28px;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.04em;color:var(--ash)}
+  .proof span{display:inline-flex;align-items:center;gap:9px}
+  .proof span::before{content:"";width:6px;height:6px;background:var(--signal)}
+
+  /* PANELEN (console-stijl) */
+  .panel{background:var(--coal);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 30px 80px var(--shadow);min-width:0}
+  .c-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash)}
+  .c-head .l{display:flex;align-items:center;gap:9px;color:var(--bone)}
+  .c-tag{border:1px solid var(--line);padding:3px 8px;border-radius:3px;color:var(--smoke)}
+
+  /* Route van klik tot klant (home) */
+  .stages{display:flex;flex-direction:column;gap:16px;padding:20px}
+  .stage{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px 14px 14px;border:1px solid var(--line);border-radius:6px;background:var(--graphite);transition:border-color .4s,background .4s}
+  .stage + .stage::before{content:"";position:absolute;left:36px;top:-17px;width:1px;height:16px;background:var(--line);transition:background .4s}
+  .stage.on{border-color:var(--signal-line);background:var(--signal-wash)}
+  .stage.on::before{background:var(--signal)}
+  .stage .no{width:44px;height:44px;border:1px solid var(--line);border-radius:4px;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;color:var(--signal);background:var(--coal)}
+  .stage h4{font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:16px;line-height:1.2}
+  .stage p{font-size:13px;color:var(--ash);margin-top:2px}
+  .stage .v{text-align:right}
+  .stage .v b{display:block;font-family:var(--f-mono);font-weight:500;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+  .stage .v span{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke)}
+  .stage.last .v b{color:var(--signal)}
+  @media(max-width:400px){
+    .stages{padding:16px}
+    .stage{grid-template-columns:36px minmax(0,1fr) auto;gap:10px;padding:12px}
+    .stage .no{width:36px;height:36px;font-size:12px}
+    .stage + .stage::before{left:29px}
+    .stage h4{font-size:15px}
+    .stage .v b{font-size:15px}
+    .stage .v span{font-size:10px;letter-spacing:.06em}
+  }
+  .stages-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px 16px;border-top:1px dashed var(--line);font-family:var(--f-mono);font-size:11.5px;color:var(--smoke)}
+  .stages-foot b{color:var(--bone);font-weight:500}
+
+  /* Live opvolging (AI-pagina) */
+  .c-body{padding:18px;display:flex;flex-direction:column;gap:16px}
+  .lead-card{border:1px solid var(--line);border-radius:6px;padding:14px 16px;background:var(--graphite)}
+  .lead-top{display:flex;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:11px;color:var(--smoke);letter-spacing:.04em}
+  .lead-top .new{color:var(--signal-hot)}
+  .lead-card h4{font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:17px;margin-top:8px;line-height:1.25}
+  .lead-card p{font-size:13.5px;color:var(--ash);margin-top:2px}
+  .timer{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+  .timer .t{font-family:var(--f-mono);font-weight:500;font-size:clamp(40px,5vw,54px);line-height:1;color:var(--signal);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .timer .lbl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--smoke);text-align:right}
+  .track{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:12px}
+  .track i{display:block;height:100%;width:0;background:var(--signal)}
+  .scale{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10.5px;color:var(--smoke);margin-top:7px}
+  .reply{align-self:flex-end;max-width:90%;background:var(--signal-wash);border:1px solid var(--signal-line);border-radius:10px 10px 2px 10px;padding:12px 14px;font-size:14px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+  .reply .meta{font-family:var(--f-mono);font-size:10.5px;color:var(--ash);margin-top:7px;letter-spacing:.03em}
+  .booked{display:flex;align-items:center;gap:10px;border-top:1px dashed var(--line);padding-top:14px;font-family:var(--f-mono);font-size:12.5px;color:var(--bone);opacity:0;transition:opacity .35s}
+  .okdot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+  .soondot{width:8px;height:8px;border-radius:50%;border:1px solid var(--smoke);flex:none}
+  .show{opacity:1;transform:none}
+
+  /* Care-overzicht (webdesign-pagina) */
+  .care-rows{padding:6px 20px 10px}
+  .care-rows div{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-block:14px;border-bottom:1px solid var(--line);font-size:15px}
+  .care-rows div:last-child{border-bottom:0}
+  .care-rows span{display:flex;align-items:center;gap:12px}
+  .care-rows b{font-family:var(--f-mono);font-weight:500;font-size:12.5px;color:var(--ash);white-space:nowrap}
+
+  /* WERKGEBIED-STRIP */
+  .ticker{overflow:hidden;white-space:nowrap;background:var(--coal);border-bottom:1px solid var(--line-soft)}
+  .ticker .run{display:inline-flex;align-items:center;padding-block:15px;animation:tick 50s linear infinite}
+  .ticker span{font-family:var(--f-display);font-stretch:125%;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke);padding:0 22px}
+  .ticker b{width:6px;height:6px;background:var(--signal);flex:none}
+  @keyframes tick{to{transform:translateX(-50%)}}
+
+  /* SECTIES */
+  .sec{padding-block:clamp(44px,5.5vw,76px)}
+  .sec + .sec{border-top:1px solid var(--line-soft)}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+  @media(max-width:880px){.split{grid-template-columns:minmax(0,1fr);gap:40px}}
+
+  .stat .big{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:clamp(88px,15vw,184px);line-height:.85;letter-spacing:-.04em;color:var(--signal)}
+  .stat p{font-size:clamp(17px,2vw,20px);margin-top:18px;max-width:30ch}
+  .cmp{margin-top:30px;border-top:1px solid var(--line)}
+  .cmp .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:14px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ash)}
+  .cmp .row b{font-family:var(--f-mono);font-weight:500;color:var(--bone);white-space:nowrap}
+  .cmp .row.hot b{color:var(--signal)}
+  .cmp.flush{margin-top:0}
+
+  /* Geraster van kenmerken */
+  .ruled{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:32px}
+  .ruled > *{background:var(--ink);padding:30px 28px 34px;display:flex;flex-direction:column;gap:14px;transition:background .25s}
+  .ruled > *:hover{background:var(--coal)}
+  .ruled .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .ruled .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--smoke);text-align:right}
+  .ruled h3{font-family:var(--f-display);font-stretch:112%;font-weight:700;font-size:20px;line-height:1.2;margin-top:8px}
+  .ruled p{color:var(--ash);font-size:15px}
+  @media(max-width:980px){.ruled.six{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .ruled.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ruled .pain h3{font-size:clamp(20px,2.2vw,24px);margin-top:0}
+  .pain .fix{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+  .pain .fix .k{color:var(--signal);text-align:left}
+  .ruled .need .k{color:var(--signal);text-align:left}
+  .need .ticks li{font-size:15.5px}
+  .ticks{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .ticks li{display:flex;gap:12px;align-items:baseline;font-size:15px}
+  .ticks li::before{content:"";width:6px;height:6px;background:var(--signal);flex:none;transform:translateY(-2px)}
+  @media(max-width:880px){.ruled.three,.ruled.two{grid-template-columns:minmax(0,1fr)}}
+  @media(max-width:620px){.ruled.six{grid-template-columns:minmax(0,1fr)}}
+
+  /* Dienstkaarten (home) */
+  .svc{min-height:100%}
+  .svc h3{font-size:clamp(22px,2.4vw,28px)}
+  .svc .more{margin-top:auto;padding-top:18px;display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:15px}
+  .svc .more .arr{color:var(--signal);transition:transform .2s}
+  .svc:hover .more .arr{transform:translateX(5px)}
+  .svc:hover h3{color:var(--signal-hot)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chips span{border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:14.5px;transition:border-color .2s}
+  .chips span:hover{border-color:var(--signal)}
+
+  /* Offerte-blok */
+  .offer{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;background:var(--coal);border:1px solid var(--line);border-radius:8px;padding:clamp(28px,5vw,48px)}
+  .offer > div{min-width:0;flex:1 1 420px}
+  .offer .cta-row{margin-top:0}
+  .offer.stack{flex-direction:column;align-items:flex-start;gap:28px}
+  .offer.stack > div{flex:none;width:100%}
+  .offer.stack .h2{max-width:32ch}
+  .offer.stack .lead{max-width:72ch}
+
+  /* Grote afsluitende call-to-action */
+  .band{overflow:hidden;background:var(--coal);border-top:1px solid var(--line)}
+  .band-in{position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;padding-block:clamp(40px,5.5vw,64px)}
+  .band h2{font-size:clamp(30px,5vw,58px);max-width:18ch}
+  .band .cta-row{margin-top:0}
+  .band-in > div{min-width:0;flex:1 1 480px}
+
+  /* PAGINAKOP binnenpagina's */
+  .phead{overflow:hidden;border-bottom:1px solid var(--line-soft);background:radial-gradient(600px 320px at 90% 0%,var(--signal-glow),transparent 70%),var(--ink)}
+  .phead .wrap{position:relative;padding-block:clamp(44px,6vw,80px) clamp(32px,4.5vw,52px)}
+  .phead h1{font-size:clamp(36px,6vw,72px);margin-top:20px;max-width:17ch}
+  .phead p{color:var(--ash);font-size:clamp(16px,1.9vw,19px);margin-top:20px;max-width:58ch}
+
+  /* STAPPEN */
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;margin-top:32px}
+  .steps.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media(max-width:980px){.steps.four{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:44px}}
+  @media(max-width:880px){.steps:not(.four){grid-template-columns:minmax(0,1fr);gap:40px}}
+  @media(max-width:560px){.steps.four{grid-template-columns:minmax(0,1fr);gap:40px}}
+  .step{position:relative;border-top:2px solid var(--line);padding-top:26px}
+  .step::before{content:"";position:absolute;top:-7px;left:0;width:12px;height:12px;background:var(--signal)}
+  .step .n{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:76px;line-height:1;color:transparent;-webkit-text-stroke:1px var(--smoke);transition:-webkit-text-stroke-color .25s}
+  .step:hover .n{-webkit-text-stroke-color:var(--signal)}
+  .step h3{font-family:var(--f-display);font-stretch:112%;font-weight:700;font-size:22px;margin-top:14px}
+  .step p{color:var(--ash);font-size:15px;margin-top:8px;max-width:38ch}
+
+  .faq{margin-top:28px;border-top:1px solid var(--line)}
+  details{border-bottom:1px solid var(--line)}
+  summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding-block:22px;font-family:var(--f-display);font-stretch:108%;font-weight:600;font-size:clamp(16px,2vw,19px);transition:color .2s}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-family:var(--f-mono);font-size:22px;font-weight:400;color:var(--signal);transition:transform .25s;flex:none}
+  summary:hover{color:var(--signal-hot)}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{color:var(--ash);font-size:15.5px;padding-bottom:24px;max-width:100ch}
+
+  /* WERKWIJZE */
+  .timeline{margin-top:32px;border-top:1px solid var(--line)}
+  .tl{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1.4fr);gap:32px;align-items:start;padding-block:26px;border-bottom:1px solid var(--line)}
+  .tl .n{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:72px;line-height:.9;color:transparent;-webkit-text-stroke:1px var(--smoke);transition:-webkit-text-stroke-color .25s}
+  .tl:hover .n{-webkit-text-stroke-color:var(--signal)}
+  .tl .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal)}
+  .tl h3{font-family:var(--f-display);font-stretch:112%;font-weight:700;font-size:24px;line-height:1.2;margin-top:6px}
+  .tl p{color:var(--ash);font-size:16px}
+  @media(max-width:880px){.tl{grid-template-columns:64px minmax(0,1fr);gap:8px 20px}.tl .n{font-size:48px}.tl p{grid-column:2}}
+
+  /* Ankers binnen een pagina */
+  .price-sec{scroll-margin-top:72px}
+
+  /* PROJECTEN */
+  [hidden]{display:none!important}
+  .projects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:32px}
+  @media(max-width:980px){.projects{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.projects{grid-template-columns:minmax(0,1fr)}}
+  .proj{display:flex;flex-direction:column;background:var(--coal);border:1px solid var(--line);border-radius:8px;overflow:hidden;transition:border-color .25s}
+  .proj:hover{border-color:var(--smoke)}
+  .shot{position:relative;aspect-ratio:16/10;max-width:100%;background:var(--graphite);border-bottom:1px solid var(--line);overflow:hidden}
+  .shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .shot .ex{position:absolute;top:24px;right:32px;z-index:2;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--smoke)}
+  .frame{position:absolute;inset:20px 22px 0;background:var(--coal);border:1px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0;padding:38px 18px 0;transition:transform .35s}
+  .frame::before{content:"";position:absolute;top:0;left:0;right:0;height:24px;border-bottom:1px solid var(--line)}
+  .frame::after{content:"";position:absolute;top:9px;left:11px;width:6px;height:6px;border-radius:50%;background:var(--line);box-shadow:10px 0 0 var(--line),20px 0 0 var(--line)}
+  .proj:hover .frame{transform:translateY(-6px)}
+  .frame i{display:block;background:var(--line);border-radius:2px}
+  .ph-web{display:grid;grid-template-columns:1.2fr 1fr;align-content:start;column-gap:14px;row-gap:9px;height:100%}
+  .ph-web .h{height:12px;width:90%}
+  .ph-web .l{height:6px;grid-column:1}
+  .ph-web .l.s{width:70%}
+  .ph-web .b{height:14px;width:45%;background:var(--signal);grid-column:1;margin-top:6px}
+  .ph-web .img{grid-column:2;grid-row:1 / span 4;min-height:70px;background:var(--graphite);border:1px solid var(--line);border-radius:4px}
+  .proj-body{display:flex;flex-direction:column;gap:10px;flex:1;padding:24px 24px 26px}
+  .proj .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--smoke)}
+  .proj h3{font-family:var(--f-display);font-stretch:112%;font-weight:700;font-size:20px;line-height:1.2}
+  .proj p{color:var(--ash);font-size:15px}
+  .delivered{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .proj p + .delivered{margin-top:auto}
+  .proj-body > p{margin-bottom:8px}
+  .delivered .dl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke)}
+  .tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .tags span{font-size:13.5px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--signal-line);background:var(--signal-wash)}
+  .tags i{font-style:normal;font-family:var(--f-mono);color:var(--smoke)}
+  .proj.cta-tile{border-style:dashed;background:transparent;justify-content:center;gap:14px;padding:32px 28px}
+  .cta-tile .plus{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:56px;line-height:.8;color:var(--signal)}
+  .cta-tile .btn{align-self:flex-start;margin-top:8px}
+
+  /* PRIVACY & VOORWAARDEN */
+  .legal{display:grid;grid-template-columns:240px minmax(0,1fr);gap:64px;align-items:start}
+  @media(max-width:880px){.legal{grid-template-columns:minmax(0,1fr);gap:32px}}
+  .toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px);display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line)}
+  .toc a{padding:8px 0 8px 16px;font-size:14.5px;color:var(--ash);transition:color .2s}
+  .toc a:hover{color:var(--bone)}
+  .toc .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke);padding:0 0 10px 16px}
+  @media(max-width:880px){.toc{position:static;flex-direction:row;flex-wrap:wrap;gap:8px;border-left:0}.toc .t{display:none}.toc a{padding:8px 14px;border:1px solid var(--line);border-radius:999px}}
+  .legal-body{max-width:72ch}
+  .notice{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--signal-line);background:var(--signal-wash);border-radius:6px;padding:16px 18px;font-size:14.5px;margin-bottom:48px}
+  .notice::before{content:"";width:8px;height:8px;margin-top:7px;background:var(--signal);flex:none}
+  .doc{scroll-margin-top:96px}
+  .doc + .doc{margin-top:44px;padding-top:36px;border-top:1px solid var(--line)}
+  .doc h2{font-family:var(--f-display);font-stretch:115%;font-weight:800;font-size:clamp(26px,3.4vw,36px);line-height:1.1}
+  .doc .upd{font-family:var(--f-mono);font-size:12px;color:var(--smoke);margin-top:10px}
+  .doc h3{font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:18px;margin-top:36px}
+  .doc p,.doc li{color:var(--ash);font-size:15.5px}
+  .doc p{margin-top:10px}
+  .doc ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .doc li{display:flex;gap:12px;align-items:baseline}
+  .doc li::before{content:"";width:5px;height:5px;background:var(--signal);flex:none;transform:translateY(-2px)}
+  .doc strong{color:var(--bone);font-weight:600}
+  .doc a{color:var(--bone);text-decoration:underline;text-decoration-color:var(--signal);text-underline-offset:3px}
+  .form .fine{font-size:12.5px;color:var(--smoke)}
+  .form .fine a{color:var(--ash);text-decoration:underline;text-underline-offset:2px}
+
+  /* OVER ONS */
+  .quote{margin-top:clamp(40px,5vw,60px);display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"mark text photo";gap:24px 40px;align-items:center}
+  .quote .text{grid-area:text}
+  .quote .photo{grid-area:photo;width:clamp(150px,18vw,230px);height:auto;max-width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 22%;border-radius:6px;border:1px solid var(--line);box-shadow:0 20px 50px var(--shadow)}
+  .quote .mark{grid-area:mark;align-self:start;font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:120px;line-height:.8;color:var(--signal)}
+  .quote p{font-family:var(--f-display);font-stretch:108%;font-weight:600;font-size:clamp(20px,2.8vw,30px);line-height:1.35;max-width:36ch;text-wrap:pretty}
+  .quote .by{font-family:var(--f-mono);font-size:12.5px;color:var(--ash);margin-top:20px;letter-spacing:.04em}
+  @media(max-width:620px){.quote{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"mark photo" "text text";gap:16px}.quote .mark{font-size:80px}.quote .photo{width:120px}}
+
+  /* CONTACT */
+  .cgrid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:start}
+  @media(max-width:900px){.cgrid{grid-template-columns:minmax(0,1fr);gap:44px}}
+  .clist{margin-top:34px;border-top:1px solid var(--line)}
+  .clist div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding-block:16px;border-bottom:1px solid var(--line)}
+  .clist span{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke)}
+  .clist a,.clist em{font-style:normal;font-size:16px;user-select:all}
+  .clist a:hover{color:var(--signal-hot)}
+  .form{background:var(--coal);border:1px solid var(--line);border-radius:8px;padding:clamp(24px,4vw,36px)}
+  .form h3{font-family:var(--f-display);font-stretch:112%;font-weight:700;font-size:22px;margin-bottom:22px}
+  .form form{display:flex;flex-direction:column;gap:16px}
+  .form .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+  @media(max-width:520px){.form .two{grid-template-columns:minmax(0,1fr);gap:16px}}
+  .form label,.form legend{display:flex;flex-direction:column;gap:7px;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash)}
+  .form input:not([type=checkbox]),.form textarea{width:100%;font-family:var(--f-body);font-size:15.5px;letter-spacing:0;text-transform:none;color:var(--bone);background:var(--ink);border:1px solid var(--line);border-radius:4px;padding:13px 14px;transition:border-color .2s,box-shadow .2s;resize:vertical}
+  .form input::placeholder,.form textarea::placeholder{color:var(--smoke)}
+  .form input:not([type=checkbox]):focus,.form textarea:focus{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-wash)}
+  .form fieldset{border:0;display:flex;flex-direction:column;gap:10px}
+  .picks{display:flex;flex-wrap:wrap;gap:8px}
+  .form label.pick{display:inline-flex;flex-direction:row;cursor:pointer;font-family:var(--f-body);font-size:14.5px;letter-spacing:0;text-transform:none;color:var(--bone)}
+  .pick input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+  .pick span{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:9px 15px;transition:border-color .2s,background .2s}
+  .pick span::before{content:"";width:8px;height:8px;border:1px solid var(--smoke);border-radius:2px;transition:background .2s,border-color .2s}
+  .pick:hover span{border-color:var(--smoke)}
+  .pick input:checked + span{border-color:var(--signal);background:var(--signal-wash)}
+  .pick input:checked + span::before{background:var(--signal);border-color:var(--signal)}
+  .pick input:focus-visible + span{outline:2px solid var(--signal-hot);outline-offset:2px}
+  .form .btn{width:100%;margin-top:4px;padding-block:16px}
+  .form .ok{min-height:1.4em;font-size:14.5px;font-weight:600;color:var(--ok)}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);background:var(--ink);color:var(--ash)}
+  .foot{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:32px;padding-block:56px 40px}
+  @media(max-width:860px){.foot{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.foot{grid-template-columns:1fr}}
+  footer h4{font-family:var(--f-mono);font-weight:500;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke);margin-bottom:14px}
+  footer .fnav{display:flex;flex-direction:column;gap:9px;font-size:14.5px}
+  footer .fnav a:hover{color:var(--bone)}
+  footer .fmeta{font-size:14.5px;line-height:1.9}
+  footer .fmeta a:hover{color:var(--bone)}
+  .wordmark{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:clamp(64px,17vw,232px);line-height:.8;letter-spacing:-.03em;color:var(--line-soft);user-select:none;padding-top:8px;overflow:hidden}
+  .fbottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line-soft);padding-block:20px 28px;font-family:var(--f-mono);font-size:11.5px;color:var(--smoke);letter-spacing:.03em}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .ticker{white-space:normal}
+    .ticker .run{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar" id="menu">
+    <a href="#home" class="logo" data-nav aria-label="Mosae Solutions, naar home">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="4" fill="var(--signal)"/><path d="M8 25V10l9 9 9-9v15" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="miter"/></svg>
+      <span class="wm">MOSAE<small>solutions</small></span>
+    </a>
+    <button class="hamb" id="hamb" aria-label="Menu" aria-expanded="false" aria-controls="navlinks"><span></span><span></span><span></span></button>
+    <div class="navlinks" id="navlinks">
+      <a href="#home" data-nav>Home</a>
+      <a href="#webdesign" data-nav>Webdesign &amp; care</a>
+      <a href="#ai" data-nav>AI-opvolging</a>
+      <a href="#werkwijze" data-nav>Werkwijze</a>
+      <a href="#projecten" data-nav>Projecten</a>
+      <a href="#over" data-nav>Over ons</a>
+      <a href="#contact" class="btn btn-red btn-sm" data-nav>Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HOME ============ -->
+<div class="page active" id="page-home">
+  <header class="hero gridbg">
+    <div class="wrap hero-in">
+      <div>
+        <span class="badge rev"><span class="live-dot"></span> Webdesign &amp; care</span>
+        <h1 class="display rev">Een website die <span class="red">klanten oplevert.</span></h1>
+        <p class="sub rev">Mosae Solutions ontwerpt, bouwt en onderhoudt websites voor bedrijven van elke omvang, waar u ook zit. Snel, mobielvriendelijk en gericht op aanvragen. Website en onderhoud in één vast bedrag per maand.</p>
+        <div class="cta-row rev">
+          <a href="#contact" class="btn btn-red" data-nav>Plan een kennismaking <span class="arr">→</span></a>
+          <a href="#werkwijze" class="btn btn-line" data-nav>Bekijk onze werkwijze</a>
+        </div>
+        <p class="promise rev"><b>Niet tevreden in de eerste maand?</b> Dan betaalt u niets!</p>
+        <div class="proof rev"><span>Gratis kennismaking</span><span>Voorstel op maat</span><span>Onderhoud inbegrepen</span></div>
+      </div>
+
+      <div class="panel rev" aria-label="Voorbeeld van de route van ontwerp tot klant">
+        <div class="c-head"><span class="l"><span class="live-dot"></span> Van ontwerp tot klant</span><span class="c-tag">Voorbeeld</span></div>
+        <div class="stages" id="stages">
+          <div class="stage on"><span class="no">01</span><div><h4>Ontwerpen &amp; bouwen</h4><p>Webdesign</p></div><div class="v"><b>1–3 wk</b><span>Live</span></div></div>
+          <div class="stage"><span class="no">02</span><div><h4>Veilig &amp; actueel</h4><p>Website care</p></div><div class="v"><b>Actief</b><span>Monitoring</span></div></div>
+          <div class="stage last"><span class="no">03</span><div><h4>Aanvragen ontvangen</h4><p>Via uw contactformulier</p></div><div class="v"><b>Altijd</b><span>Online</span></div></div>
+        </div>
+        <div class="stages-foot"><span>Ontwerp, bouw &amp; onderhoud <b>in één</b></span><span>Aanspreekpunt <b>één, vast</b></span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="ticker" aria-label="Wat we doen">
+    <div class="run">
+      <span>Webdesign</span><b></b><span>Onepagers</span><b></b><span>Bedrijfswebsites</span><b></b><span>Webshops</span><b></b><span>Website care</span><b></b><span>Hosting &amp; onderhoud</span><b></b><span>Updates &amp; back-ups</span><b></b><span>Snel &amp; mobiel</span><b></b><span>Ontwerp op maat</span><b></b>
+      <span aria-hidden="true">Webdesign</span><b></b><span aria-hidden="true">Onepagers</span><b></b><span aria-hidden="true">Bedrijfswebsites</span><b></b><span aria-hidden="true">Webshops</span><b></b><span aria-hidden="true">Website care</span><b></b><span aria-hidden="true">Hosting &amp; onderhoud</span><b></b><span aria-hidden="true">Updates &amp; back-ups</span><b></b><span aria-hidden="true">Snel &amp; mobiel</span><b></b><span aria-hidden="true">Ontwerp op maat</span><b></b>
+    </div>
+  </div>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Herkenbaar?</span><h2 class="h2">Hier lopen veel bedrijven tegenaan.</h2></div>
+      <div class="ruled two">
+        <div class="pain rev">
+          <span class="k">Het probleem</span>
+          <h3>Uw website is verouderd, of u heeft er nog geen.</h3>
+          <div class="fix"><span class="k">Wat wij doen</span><p>We bouwen een moderne website die zowel op de telefoon als op de computer perfect werkt, zodat bezoekers meteen het gevoel hebben dat ze goed zitten.</p></div>
+        </div>
+        <div class="pain rev">
+          <span class="k">Het probleem</span>
+          <h3>Klanten komen u niet snel tegen op Google.</h3>
+          <div class="fix"><span class="k">Wat wij doen</span><p>Wij bouwen uw site met de woorden waarop uw klanten zoeken, in de regio waar u werkt. Zo vinden klanten u makkelijker in Google.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="diensten-overzicht">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Diensten</span><h2 class="h2">Uw website als basis. En er komt meer.</h2><p class="lead wide">Begin met een website die werkt en goed onderhouden blijft. Binnenkort kunt u daar AI-opvolging aan toevoegen, zodat geen aanvraag meer blijft liggen.</p></div>
+      <div class="ruled two">
+        <a href="#webdesign" class="svc rev" data-nav>
+          <div class="top"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 8h18M8 21h8M12 18v3"/></svg><span class="k">De basis · voor elk bedrijf</span></div>
+          <h3>Webdesign &amp; care</h3>
+          <p>Een website die van bezoekers klanten maakt. Na de lancering houden wij hem veilig, actueel en online.</p>
+          <ul class="ticks"><li>Werkt goed op elke telefoon</li><li>Snel en vindbaar in Google</li><li>Wij schrijven uw teksten</li></ul>
+          <span class="more">Meer over webdesign <span class="arr">→</span></span>
+        </a>
+        <a href="#ai" class="svc rev" data-nav>
+          <div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="k">Coming soon</span></div>
+          <h3>AI-opvolging</h3>
+          <p>We werken aan een slimme manier om elke aanvraag direct op te volgen, ook 's avonds en in het weekend. Binnenkort meer.</p>
+          <span class="more">Bekijk wat eraan komt <span class="arr">→</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap split">
+      <div class="rev">
+        <span class="eyebrow">Waarom Mosae</span>
+        <h2 class="h2">Eén partner voor uw website, van ontwerp tot onderhoud.</h2>
+        <p class="lead">U heeft één vast aanspreekpunt dat uw site bouwt, online houdt en verbetert. Geen gedoe met losse partijen voor hosting, updates of kleine aanpassingen.</p>
+      </div>
+      <div class="cmp flush rev">
+        <div class="row hot"><span>Kennismaking</span><b>gratis &amp; vrijblijvend</b></div>
+        <div class="row"><span>Prijs</span><b>op maat, vooraf bekend</b></div>
+        <div class="row"><span>Live</span><b>binnen 1 tot 3 weken</b></div>
+        <div class="row"><span>Werkgebied</span><b>overal, volledig online</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Werkwijze</span><h2 class="h2">Zo pakken we het aan.</h2></div>
+      <div class="steps four">
+        <div class="step rev"><div class="n">1</div><h3>Kennismaken</h3><p>Een vrijblijvend gesprek over uw bedrijf en wat uw website voor u moet doen.</p></div>
+        <div class="step rev"><div class="n">2</div><h3>Ontwerp &amp; voorstel</h3><p>U krijgt een helder voorstel: wat we gaan maken, wat het kost en wanneer uw site live staat.</p></div>
+        <div class="step rev"><div class="n">3</div><h3>Bouwen &amp; lanceren</h3><p>Wij bouwen uw site en testen alles op computer en telefoon voordat hij live gaat.</p></div>
+        <div class="step rev"><div class="n">4</div><h3>Onderhouden &amp; verbeteren</h3><p>Met care houden we uw site veilig en actueel, en denken we mee over verbeteringen.</p></div>
+      </div>
+      <div class="cta-row rev" style="margin-top:44px"><a href="#werkwijze" class="btn btn-line" data-nav>Bekijk onze volledige werkwijze <span class="arr">→</span></a></div>
+    </div>
+  </section>
+
+  <section class="band gridbg">
+    <div class="wrap band-in">
+      <h2 class="display rev">Klaar voor een website <span class="red">die werkt?</span></h2>
+      <div class="cta-row rev">
+        <a href="#contact" class="btn btn-red" data-nav>Plan een kennismaking <span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ WEBDESIGN & CARE ============ -->
+<div class="page" id="page-webdesign">
+  <div class="phead gridbg"><div class="wrap"><span class="eyebrow rev">Webdesign &amp; care</span><h1 class="display rev">Een website die overtuigt, <span class="red">en blijft werken.</span></h1><p class="rev">Uw website is vaak de eerste indruk. Wij ontwerpen en bouwen een site die past bij uw bedrijf: van een onepager of compacte bedrijfssite tot een uitgebreide website of webshop. Daarna houden we hem veilig, snel en actueel.</p></div></div>
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Webdesign</span><h2 class="h2">Gebouwd om bezoekers klant te maken.</h2></div>
+      <div class="ruled two">
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span class="k">Op maat</span></div><h3>Uw eigen ontwerp</h3><p>Een site die past bij uw bedrijf, geen template die iedereen al heeft. Met duidelijke knoppen en een goed formulier, zodat bezoekers ook echt contact opnemen.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><span class="k">Snel &amp; mobiel</span></div><h3>Werkt op elke telefoon</h3><p>De meeste bezoekers komen via hun telefoon. Uw site laadt snel en ziet er op elk scherm goed uit.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span class="k">Google</span></div><h3>Vindbaar voor uw klanten</h3><p>We bouwen uw site rond de zoekwoorden die uw klanten gebruiken, in uw regio, met een technisch nette basis die Google begrijpt.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg><span class="k">Teksten</span></div><h3>Wij schrijven uw teksten</h3><p>Niet iedereen schrijft graag, en dat hoeft ook niet. Wij schrijven heldere teksten die laten zien wat u doet en waarom klanten voor u kiezen.</p></div>
+      </div>
+      <div class="rev" style="margin-top:56px"><span class="eyebrow">Voor elk bedrijf</span>
+        <div class="chips"><span>Zzp'ers &amp; lokale ondernemers</span><span>MKB</span><span>Webshops</span><span>B2B-bedrijven</span><span>Grotere organisaties</span></div>
+      </div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap split">
+      <div class="rev">
+        <span class="eyebrow">Website care</span>
+        <h2 class="h2">Wij houden uw site veilig, snel en actueel.</h2>
+        <p class="lead">Care zit standaard bij elke website die wij bouwen, dus u hoeft nergens meer aan te denken. Hosting, updates, back-ups en beveiliging regelen wij. Ligt uw site eruit, dan krijgen wij automatisch een melding en gaan we er zo snel mogelijk mee aan de slag.</p>
+      </div>
+      <div class="panel rev" aria-label="Voorbeeld van een care-overzicht">
+        <div class="c-head"><span class="l"><span class="okdot"></span> Care-overzicht</span><span class="c-tag">Voorbeeld</span></div>
+        <div class="care-rows">
+          <div><span><i class="okdot"></i>Hosting &amp; SSL</span><b>Actief</b></div>
+          <div><span><i class="okdot"></i>Back-ups</span><b>Automatisch</b></div>
+          <div><span><i class="okdot"></i>Updates</span><b>Doorlopend</b></div>
+          <div><span><i class="okdot"></i>Beveiliging &amp; monitoring</span><b>Actief</b></div>
+          <div><span><i class="okdot"></i>Snelheidscheck</span><b>Elke maand</b></div>
+          <div><span><i class="okdot"></i>Kleine aanpassingen</span><b>Op verzoek</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Veelgestelde vragen</span><h2 class="h2">Goed om te weten.</h2></div>
+      <div class="faq">
+        <details class="rev"><summary>Hoe werkt het abonnement?</summary><p>U betaalt één vast bedrag per maand voor uw website, inclusief hosting, updates, back-ups en onderhoud. U neemt de website af voor een jaar. De eerste maand, gerekend vanaf de start van onze samenwerking, is een proefperiode: bevalt het niet, dan kunt u tot het einde van die maand kosteloos opzeggen en betaalt u helemaal niets, ook geen opstartkosten. Gaat u door, dan betaalt u ook de eerste maand gewoon en ligt het jaar vast. Wilt u stoppen, dan zegt u uiterlijk één maand voor het einde schriftelijk of per e-mail op. Na het eerste jaar heeft u twee opties: u gaat maandelijks opzegbaar verder, of u kiest voor nog een vast jaar en krijgt daarvoor korting (percentage in overleg).</p></details>
+        <details class="rev"><summary>Van wie is mijn website?</summary><p>De website en de domeinnaam zijn onderdeel van uw abonnement. Wilt u de website of domeinnaam overnemen en verder zonder onze care? Dan gaan we graag met u in gesprek over de mogelijkheden. Neemt u niets over, dan zeggen wij 30 dagen na het einde van het abonnement de domeinnaam op en verwijderen we de website en de content. Een domeinnaam die u zelf al had, blijft altijd van u. Liever vanaf het begin gewoon een website kopen, zonder abonnement? Ook dan denken we graag met u mee over de mogelijkheden en de prijs.</p></details>
+        <details class="rev"><summary>Kan ik zelf teksten en foto's aanpassen?</summary><p>Dat hoeft niet, dat doen wij voor u. Geef door wat u wilt veranderen, dan passen wij het aan. Zo blijft uw site er altijd verzorgd uitzien en gaat er technisch niets mis.</p></details>
+        <details class="rev"><summary>Wat bepaalt de prijs?</summary><p>Elke website is anders, daarom maken we altijd een voorstel op maat. De prijs hangt vooral af van het aantal pagina's, de functies die u nodig heeft (zoals een webshop of koppelingen met andere systemen) en hoeveel teksten we voor u schrijven. In een vrijblijvend gesprek brengen we dat samen in kaart, en daarna ontvangt u een duidelijke prijs. Alle prijzen zijn exclusief btw.</p></details>
+        <details class="rev"><summary>Hoe lang duurt het voordat mijn site live staat?</summary><p>Een compacte bedrijfssite staat binnen één tot drie weken live, zodra wij alle benodigde informatie van u hebben ontvangen. Bij een uitgebreide website hangt het af van het aantal pagina's en functies. In het voorstel staat een planning.</p></details>
+        <details class="rev"><summary>Is mijn nieuwe site ook goed vindbaar in Google?</summary><p>Ja, elke site die we bouwen heeft een goede basis: snel, mobielvriendelijk en technisch netjes opgezet voor zoekmachines. Wilt u echt hoger scoren op specifieke zoekwoorden, dan denken we graag met u mee.</p></details>
+      </div>
+      <div class="offer rev" style="margin-top:72px">
+        <div>
+          <span class="eyebrow">Investering</span>
+          <h2 class="h2">Eén vast bedrag per maand, alles geregeld.</h2>
+          <p class="lead">U betaalt één vast bedrag per maand voor uw website én het onderhoud. Eventuele opstartkosten nemen we mee in de eerste factuur. De prijs stemmen we af na een vrijblijvend gesprek over wat er gedaan moet worden.</p>
+        </div>
+        <div class="cta-row"><a href="#werkwijze" class="btn btn-line" data-nav>Bekijk onze werkwijze</a><a href="#contact" class="btn btn-red" data-nav data-dienst="webdesign">Plan een gesprek <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </section>
+  <section class="band gridbg">
+    <div class="wrap band-in">
+      <div>
+        <span class="eyebrow rev">Haal meer uit uw website</span>
+        <h2 class="display rev" style="margin-top:16px">Binnenkort: <span class="red">AI-opvolging.</span></h2>
+        <p class="lead rev">We werken aan een manier om elke aanvraag via uw contactformulier direct op te volgen, ook 's avonds en in het weekend.</p>
+      </div>
+      <div class="cta-row rev"><a href="#ai" class="btn btn-line" data-nav>Bekijk wat eraan komt <span class="arr">→</span></a></div>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <div class="offer stack rev">
+        <div>
+          <span class="eyebrow">Meer nodig?</span>
+          <h2 class="h2">Nog social media of online marketing nodig?</h2>
+          <p class="lead">We gaan graag met u in gesprek over wat we nog meer voor u kunnen betekenen. Samen kijken we wat we mogelijk kunnen toevoegen en wat bij uw bedrijf past.</p>
+        </div>
+        <div class="cta-row"><a href="#contact" class="btn btn-red" data-nav data-dienst="overig">Neem contact op <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ AI-OPVOLGING (COMING SOON) ============ -->
+<div class="page" id="page-ai">
+  <header class="hero gridbg">
+    <div class="wrap hero-in">
+      <div>
+        <span class="badge rev"><span class="live-dot"></span> Coming soon</span>
+        <h1 class="display rev">AI-opvolging komt <span class="red">binnenkort.</span></h1>
+        <p class="sub rev">We werken aan een slimme manier om elke aanvraag die via uw website binnenkomt direct op te volgen, ook 's avonds en in het weekend. Zo blijft er straks geen aanvraag meer liggen.</p>
+        <div class="cta-row rev">
+          <a href="#contact" class="btn btn-red" data-nav data-dienst="ai">Houd mij op de hoogte <span class="arr">→</span></a>
+          <a href="#ai-wat" class="btn btn-line" data-jump>Wat het gaat doen</a>
+        </div>
+        <div class="proof rev"><span>Binnen 60 seconden antwoord</span><span>Ook 's avonds en in het weekend</span><span>Werkt met uw website</span></div>
+      </div>
+
+      <div class="panel rev" aria-label="Voorproefje van AI-opvolging: een aanvraag die automatisch wordt opgevolgd">
+        <div class="c-head"><span class="l"><span class="live-dot"></span> Inkomende aanvragen</span><span class="c-tag">Voorproefje</span></div>
+        <div class="c-body">
+          <div class="lead-card">
+            <div class="lead-top"><span class="new">● Nieuw</span><span id="cTime">Ontvangen 22:47</span></div>
+            <h4 id="cTitle">Offerte warmtepomp</h4>
+            <p id="cMeta">R. Janssen · Venlo · via websiteformulier</p>
+          </div>
+          <div>
+            <div class="timer"><span class="t" id="cTimer">00:38</span><span class="lbl">Tijd tot<br>eerste antwoord</span></div>
+            <div class="track"><i id="cBar" style="width:63%"></i></div>
+            <div class="scale"><span>0 s</span><span>30 s</span><span>60 s</span></div>
+          </div>
+          <div class="reply show" id="cReply">
+            <span id="cReplyText">Goedenavond! Bedankt voor uw aanvraag voor een warmtepomp. Komt een opname bij u thuis uit? Donderdag 09:30 is nog vrij.</span>
+            <div class="meta" id="cReplyMeta">Verzonden via WhatsApp · 38 sec na ontvangst</div>
+          </div>
+          <div class="booked show" id="cBooked"><span class="okdot"></span><span id="cBookedText">In agenda: do 09:30 · opname op locatie</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="sec">
+    <div class="wrap split">
+      <div class="rev">
+        <span class="eyebrow">Het probleem</span>
+        <h2 class="h2">Wie dagen moet wachten, kiest een ander.</h2>
+        <p class="lead">In de praktijk blijven veel aanvragen één, twee of zelfs drie dagen liggen. Komt er vrijdagmiddag een aanvraag binnen, dan hoort de klant vaak pas maandag iets. Ondertussen heeft die klant al andere bedrijven benaderd, en gaat de klus naar wie wél snel reageert.</p>
+        <p class="lead">Voor drukke ondernemers is dat precies het lastige: u staat op locatie, niet achter uw mail.</p>
+      </div>
+      <div class="cmp flush rev">
+        <div class="row"><span>Aanvraag binnen</span><b>vrijdag 16:30</b></div>
+        <div class="row"><span>Antwoord zonder opvolging</span><b>maandag of later</b></div>
+        <div class="row"><span>Klant wacht</span><b>2 tot 3 dagen</b></div>
+        <div class="row hot"><span>Antwoord met AI-opvolging</span><b>binnen een minuut</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec price-sec" id="ai-wat">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Waar we aan werken</span><h2 class="h2">Uw digitale collega die nooit een aanvraag mist.</h2><p class="lead">Dit is wat AI-opvolging straks voor u gaat doen. We bouwen en testen het nu, dus details kunnen nog veranderen.</p></div>
+      <div class="ruled six">
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="k">24/7</span></div><h3>Direct antwoord</h3><p>Elke aanvraag krijgt binnen een minuut een persoonlijk antwoord, dag en nacht, ook in het weekend.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg><span class="k">Kwalificeren</span></div><h3>De juiste vragen</h3><p>Het systeem vraagt door naar wat de klant nodig heeft, zodat u alleen aanvragen krijgt waar u iets mee kunt.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 13"/></svg><span class="k">Agenda</span></div><h3>Afspraak ingepland</h3><p>De klant kiest zelf een moment dat in uw agenda vrij is. U ziet de afspraak meteen staan.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span class="k">WhatsApp · mail · bel</span></div><h3>Kanaal naar keuze</h3><p>De klant kiest zelf: verder via WhatsApp, via e-mail of teruggebeld worden.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5"/></svg><span class="k">Koppeling</span></div><h3>Werkt met uw website</h3><p>We koppelen het aan het contactformulier van uw site. Heeft u een website van ons, dan is dat zo geregeld.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span class="k">Controle</span></div><h3>U houdt het overzicht</h3><p>U ziet precies wat er met elke klant is besproken. Het systeem verzint nooit prijzen of beloftes.</p></div>
+      </div>
+      <div class="rev" style="margin-top:56px"><span class="eyebrow">Straks ideaal voor</span>
+        <div class="chips"><span>Installateurs</span><span>Airco &amp; warmtepomp</span><span>Zonnepanelen</span><span>Kozijnen &amp; dakwerk</span><span>Badkamers &amp; verbouw</span><span>Andere dienstverleners met veel aanvragen</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap split">
+      <div class="rev">
+        <span class="eyebrow">Waar staan we nu?</span>
+        <h2 class="h2">Stap voor stap naar de lancering.</h2>
+        <p class="lead">We bouwen AI-opvolging zorgvuldig op en testen het eerst met een klein aantal bedrijven. Wilt u een van de eerste bedrijven zijn die het mag uitproberen? Laat het ons weten.</p>
+        <div class="cta-row"><a href="#contact" class="btn btn-red" data-nav data-dienst="ai">Meld u aan als testbedrijf <span class="arr">→</span></a></div>
+      </div>
+      <div class="panel rev" aria-label="Status van AI-opvolging">
+        <div class="c-head"><span class="l"><span class="live-dot"></span> Status</span><span class="c-tag">Coming soon</span></div>
+        <div class="care-rows">
+          <div><span><i class="okdot"></i>Idee &amp; concept</span><b>Klaar</b></div>
+          <div><span><i class="live-dot"></i>In ontwikkeling</span><b>Nu bezig</b></div>
+          <div><span><i class="soondot"></i>Testen met eerste bedrijven</span><b>Binnenkort</b></div>
+          <div><span><i class="soondot"></i>Lancering</span><b>Binnenkort</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band gridbg">
+    <div class="wrap band-in">
+      <div>
+        <span class="eyebrow rev">Alvast beginnen?</span>
+        <h2 class="display rev" style="margin-top:16px">Start met een website <span class="red">die werkt.</span></h2>
+        <p class="lead rev">Een goede website is de basis. Zodra AI-opvolging klaar is, koppelen we die eenvoudig aan uw contactformulier.</p>
+      </div>
+      <div class="cta-row rev"><a href="#webdesign" class="btn btn-line" data-nav>Bekijk webdesign &amp; care <span class="arr">→</span></a></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ WERKWIJZE ============ -->
+<div class="page" id="page-werkwijze">
+  <div class="phead gridbg"><div class="wrap"><span class="eyebrow rev">Werkwijze</span><h1 class="display rev">Zo pakken we <span class="red">het aan.</span></h1><p class="rev">Geen standaardpakketten of vaste prijslijsten. We beginnen met een vrijblijvend gesprek over wat er moet gebeuren, en maken daarna een voorstel dat past bij uw bedrijf.</p></div></div>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Van gesprek tot live</span><h2 class="h2">Vijf stappen naar uw nieuwe website.</h2></div>
+      <div class="timeline">
+        <div class="tl rev"><div class="n">1</div><div><span class="k">Gratis &amp; vrijblijvend</span><h3>Kennismaken</h3></div><p>We leren uw bedrijf kennen. Wat doet u, wie zijn uw klanten en wat moet uw website voor u opleveren? We kijken ook naar wat u nu heeft en wat beter kan.</p></div>
+        <div class="tl rev"><div class="n">2</div><div><span class="k">Op maat</span><h3>Voorstel &amp; prijs</h3></div><p>U krijgt een helder voorstel: wat we gaan maken, wanneer het live staat en wat het kost. De prijs bepalen we samen, op basis van wat er gedaan moet worden. Pas als u akkoord bent, gaan we aan de slag.</p></div>
+        <div class="tl rev"><div class="n">3</div><div><span class="k">Samen</span><h3>Ontwerp</h3></div><p>We maken een ontwerp dat past bij de stijl van uw bedrijf. U geeft feedback en wij passen het aan tot het klopt.</p></div>
+        <div class="tl rev"><div class="n">4</div><div><span class="k">Zorgvuldig</span><h3>Bouwen &amp; testen</h3></div><p>We bouwen uw website en testen alles op computer, tablet en telefoon. Formulieren, snelheid en vindbaarheid controleren we voordat de site live gaat.</p></div>
+        <div class="tl rev"><div class="n">5</div><div><span class="k">Daarna</span><h3>Live &amp; onderhoud</h3></div><p>Uw site gaat live. Daarna houden wij hem veilig, snel en actueel, en voeren we wijzigingen voor u door. U heeft er geen omkijken naar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap split">
+      <div class="rev">
+        <span class="eyebrow">Wat u kunt verwachten</span>
+        <h2 class="h2">Duidelijke afspraken, vanaf het eerste gesprek.</h2>
+        <p class="lead">U heeft één vast aanspreekpunt dat uw website van begin tot eind begeleidt. Alles wat we afspreken, staat vooraf in het voorstel. Zo weet u precies waar u aan toe bent.</p>
+      </div>
+      <div class="cmp flush rev">
+        <div class="row hot"><span>Eerste gesprek</span><b>gratis &amp; vrijblijvend</b></div>
+        <div class="row"><span>Prijs</span><b>op maat, vooraf bekend</b></div>
+        <div class="row"><span>Live</span><b>binnen 1 tot 3 weken</b></div>
+        <div class="row"><span>Onderhoud</span><b>door ons geregeld</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="rev"><span class="eyebrow">Wat we van u nodig hebben</span><h2 class="h2">Weinig werk voor u.</h2><p class="lead">Wij nemen het meeste uit handen. U levert alleen een paar dingen aan, en heeft u iets nog niet, dan regelen we het samen.</p></div>
+      <div class="ruled two">
+        <div class="need rev">
+          <span class="k">Wat u aanlevert</span>
+          <ul class="ticks">
+            <li>Informatie over uw bedrijf en uw diensten</li>
+            <li>Uw logo en huisstijl, als u die heeft</li>
+            <li>Toegang tot uw domeinnaam, als u er al een heeft</li>
+            <li>Uw feedback op het ontwerp</li>
+            <li>Foto's van uw bedrijf of werk (optioneel)</li>
+          </ul>
+        </div>
+        <div class="need rev">
+          <span class="k">Wat wij regelen</span>
+          <ul class="ticks">
+            <li>Een nieuwe domeinnaam, als u er nog geen heeft</li>
+            <li>Het ontwerp en de bouw van uw website</li>
+            <li>Het schrijven van uw teksten</li>
+            <li>Hosting, beveiliging en onderhoud</li>
+          </ul>
+        </div>
+      </div>    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="offer stack rev">
+        <div>
+          <span class="eyebrow">Benieuwd naar de prijs?</span>
+          <h2 class="h2">Elke website is anders. Daarom maken we eerst kennis.</h2>
+          <p class="lead">Plan een vrijblijvend gesprek. Daarna ontvangt u een voorstel met een duidelijke prijs, afgestemd op wat er gedaan moet worden en wat wij voor u kunnen realiseren.</p>
+        </div>
+        <div class="cta-row"><a href="#contact" class="btn btn-red" data-nav data-dienst="webdesign">Plan een vrijblijvend gesprek <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ PROJECTEN ============ -->
+<div class="page" id="page-projecten">
+  <div class="phead gridbg"><div class="wrap"><span class="eyebrow rev">Projecten</span><h1 class="display rev">Ons werk in <span class="red">de praktijk.</span></h1><p class="rev">Benieuwd wat wij kunnen? Hier ziet u wat we voor bedrijven kunnen realiseren, en ontdekt u wat we ook voor uw bedrijf kunnen doen!</p></div></div>
+  <section class="sec">
+    <div class="wrap">
+      <div class="projects" style="margin-top:0">
+        <!--
+          NIEUW PROJECT TOEVOEGEN: kopieer een <article> hieronder.
+          - Vervang de placeholder in .shot door: <img src="project-naam.webp" alt="Website van Klantnaam">
+          - Haal <span class="ex">Concept</span> weg zodra het een echt project is
+          - Zet onder "Geleverd" de diensten die je hebt geleverd
+        -->
+        <article class="proj rev" data-diensten="webdesign">
+          <div class="shot"><span class="ex">Concept</span><div class="frame"><div class="ph-web"><i class="h"></i><i class="l"></i><i class="l"></i><i class="l s"></i><i class="b"></i><i class="img"></i></div></div></div>
+          <div class="proj-body">
+            <span class="k">Installatiebedrijf</span>
+            <h3>Nieuwe website met offerteformulier</h3>
+            <p>Een snelle website met een pagina per dienst en een duidelijk offerteformulier, zodat bezoekers direct een aanvraag doen.</p>
+            <div class="delivered"><span class="dl">Geleverd</span><div class="tags"><span>Webdesign &amp; care</span></div></div>
+          </div>
+        </article>
+
+        <article class="proj rev" data-diensten="webdesign">
+          <div class="shot"><span class="ex">Concept</span><div class="frame"><div class="ph-web"><i class="h"></i><i class="l s"></i><i class="b"></i><i class="img"></i></div></div></div>
+          <div class="proj-body">
+            <span class="k">Startende zzp'er</span>
+            <h3>Een onepager om mee te starten</h3>
+            <p>Eén heldere pagina met wie u bent, wat u doet en een contactformulier. Snel live, en klaar om later uit te breiden.</p>
+            <div class="delivered"><span class="dl">Geleverd</span><div class="tags"><span>Webdesign &amp; care</span></div></div>
+          </div>
+        </article>
+
+        <article class="proj rev" data-diensten="webdesign">
+          <div class="shot"><span class="ex">Concept</span><div class="frame"><div class="ph-web"><i class="h"></i><i class="l"></i><i class="l s"></i><i class="b"></i><i class="img"></i></div></div></div>
+          <div class="proj-body">
+            <span class="k">Dakdekkersbedrijf</span>
+            <h3>Een website die vertrouwen wekt</h3>
+            <p>Een vernieuwde site met foto's van eerder werk, duidelijke diensten en een contactformulier dat ook op de telefoon prettig werkt.</p>
+            <div class="delivered"><span class="dl">Geleverd</span><div class="tags"><span>Webdesign &amp; care</span></div></div>
+          </div>
+        </article>
+
+        <article class="proj rev" data-diensten="webdesign">
+          <div class="shot"><span class="ex">Concept</span><div class="frame"><div class="ph-web"><i class="h"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l s"></i><i class="b"></i><i class="img"></i></div></div></div>
+          <div class="proj-body">
+            <span class="k">Zakelijke dienstverlener (B2B)</span>
+            <h3>Uitgebreide bedrijfssite</h3>
+            <p>Een professionele site met een pagina per dienst, referenties en een offerteformulier. Nieuwe teksten en nieuws plaatsen wij op verzoek.</p>
+            <div class="delivered"><span class="dl">Geleverd</span><div class="tags"><span>Webdesign &amp; care</span></div></div>
+          </div>
+        </article>
+
+        <article class="proj rev" data-diensten="webdesign">
+          <div class="shot"><span class="ex">Concept</span><div class="frame"><div class="ph-web"><i class="h"></i><i class="l"></i><i class="l s"></i><i class="l"></i><i class="b"></i><i class="img"></i></div></div></div>
+          <div class="proj-body">
+            <span class="k">Zorgpraktijk</span>
+            <h3>Rustige, toegankelijke website</h3>
+            <p>Een overzichtelijke site waarop patiënten snel vinden wat ze zoeken, inclusief onderhoud, updates en beveiliging.</p>
+            <div class="delivered"><span class="dl">Geleverd</span><div class="tags"><span>Webdesign &amp; care</span></div></div>
+          </div>
+        </article>
+
+        <div class="proj cta-tile rev">
+          <span class="plus" aria-hidden="true">+</span>
+          <h3>Uw project hier?</h3>
+          <p>Vertel ons wat u nodig heeft. We laten u zien hoe we het aanpakken en wat het kan opleveren.</p>
+          <a href="#contact" class="btn btn-red" data-nav>Plan een kennismaking <span class="arr">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ OVER ONS ============ -->
+<div class="page" id="page-over">
+  <div class="phead gridbg"><div class="wrap"><span class="eyebrow rev">Over ons</span><h1 class="display rev">Websites met <span class="red">Maastrichtse wortels.</span></h1><p class="rev">Mosae is de Latijnse naam voor de Maas. Vanuit Maastricht helpen we ondernemers met websites die werken en slimme automatisering, waar ze ook zitten.</p></div></div>
+  <section class="sec">
+    <div class="wrap">
+      <div class="split">
+        <div class="rev">
+          <span class="eyebrow">Onze missie</span>
+          <h2 class="h2">Een goede website, zonder gedoe.</h2>
+          <p class="lead">Elk bedrijf verdient een website die echt iets oplevert, of u nu net begint of al jaren groeit. Wij zorgen dat uw site overtuigt, veilig online blijft en dat geen aanvraag blijft liggen. Met techniek die op de achtergrond werkt, zonder dat u er werk bij krijgt.</p>
+        </div>
+        <div class="stat rev">
+          <div class="big">1</div>
+          <p>vast aanspreekpunt voor uw website, van ontwerp tot onderhoud.</p>
+          <div class="cmp">
+            <div class="row"><span>Gevestigd in</span><b>Maastricht</b></div>
+            <div class="row"><span>Werkgebied</span><b>Overal</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ruled three">
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="k">Vast aanspreekpunt</span></div><h3>Persoonlijk</h3><p>Korte lijnen, een vast aanspreekpunt en oplossingen op maat. Geen callcenter.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg><span class="k">Ontzorgen</span></div><h3>Praktisch</h3><p>Techniek die gewoon werkt en aansluit op hoe u nu al werkt.</p></div>
+        <div class="rev"><div class="top"><svg class="i" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg><span class="k">Meetbaar</span></div><h3>Resultaatgericht</h3><p>We meten alles en laten u maandelijks zien wat het oplevert. Waarde, geen vaagheid.</p></div>
+      </div>
+
+      <div class="quote rev">
+        <div class="mark" aria-hidden="true">“</div>
+        <div class="text">
+          <p>Ik zag hoe vaak goede bedrijven onzichtbaar bleven, omdat ze een verouderde of zelfs geen website hadden. Of ze lieten aanvragen liggen, puur door timing. Mosae Solutions is er om dat op te lossen, met techniek die voor ondernemers werkt in plaats van andersom.</p>
+          <div class="by">Jeneau Seyben · oprichter Mosae Solutions</div>
+        </div>
+        <img class="photo" src="jeneau-seyben.webp" alt="Jeneau Seyben, oprichter van Mosae Solutions" width="230" height="288">
+      </div>
+
+      <div class="cta-row rev" style="margin-top:56px"><a href="#contact" class="btn btn-red" data-nav>Kom kennismaken <span class="arr">→</span></a></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ CONTACT ============ -->
+<div class="page" id="page-contact">
+  <section class="sec gridbg">
+    <div class="wrap cgrid">
+      <div>
+        <span class="eyebrow rev">Gratis &amp; vrijblijvend</span>
+        <h1 class="display rev" style="font-size:clamp(36px,5.6vw,64px);margin-top:20px;max-width:14ch">Laten we kennismaken.</h1>
+        <p class="lead rev">Vertel kort waar u staat. We denken gratis mee over uw website en laten u zien wat het kan opleveren. Geen verplichtingen.</p>
+        <div class="clist rev">
+          <div><span>Reactie</span><em>binnen 1 werkdag</em></div>
+          <div><span>E-mail</span><a href="mailto:info@mosaesolutions.nl">info@mosaesolutions.nl</a></div>
+          <div><span>Telefoon</span><a href="tel:+31639893466">+31 6 39 89 34 66</a></div>
+          <div><span>Locatie</span><em>Maastricht, Limburg</em></div>
+        </div>
+      </div>
+      <div class="form rev">
+        <h3>Stuur een bericht</h3>
+        <form id="demoForm" novalidate>
+          <fieldset>
+            <legend>Waar bent u in geïnteresseerd? Eén of meer</legend>
+            <div class="picks">
+              <label class="pick" for="iWebdesign"><input type="checkbox" id="iWebdesign" name="dienst" value="webdesign"><span>Webdesign &amp; care</span></label>
+              <label class="pick" for="iAi"><input type="checkbox" id="iAi" name="dienst" value="ai"><span>AI-opvolging (binnenkort)</span></label>
+              <label class="pick" for="iOverig"><input type="checkbox" id="iOverig" name="dienst" value="overig"><span>Overig</span></label>
+            </div>
+          </fieldset>
+          <div class="two">
+            <label for="fNaam">Naam<input type="text" id="fNaam" name="naam" required autocomplete="name"></label>
+            <label for="fBedrijf">Bedrijf<input type="text" id="fBedrijf" name="bedrijf" autocomplete="organization"></label>
+          </div>
+          <div class="two">
+            <label for="fEmail">E-mail<input type="email" id="fEmail" name="email" required autocomplete="email" placeholder="naam@bedrijf.nl"></label>
+            <label for="fTel">Telefoon<input type="tel" id="fTel" name="telefoon" autocomplete="tel" placeholder="+316..."></label>
+          </div>
+          <label for="fBericht">Waar kunnen we u mee helpen?<textarea id="fBericht" name="bericht" rows="4" placeholder="Bijv. een nieuwe website, of geen aanvragen meer missen"></textarea></label>
+          <button type="submit" class="btn btn-red">Verstuur bericht <span class="arr">→</span></button>
+          <p class="ok" id="demoOk" role="status" aria-live="polite"></p>
+          <p class="fine">Lees in onze <a href="#privacy" data-nav>privacyverklaring</a> hoe we met uw gegevens omgaan. We werken uitsluitend voor bedrijven en organisaties.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ PRIVACY & VOORWAARDEN ============ -->
+<div class="page" id="page-privacy">
+  <div class="phead gridbg"><div class="wrap"><span class="eyebrow rev">Privacy &amp; voorwaarden</span><h1 class="display rev">Duidelijke afspraken.</h1><p class="rev">Hoe wij met uw gegevens omgaan, en onder welke voorwaarden we samenwerken.</p></div></div>
+  <section class="sec">
+    <div class="wrap legal">
+      <aside class="toc rev" aria-label="Inhoud">
+        <span class="t">Op deze pagina</span>
+        <a href="#privacyverklaring" data-jump>Privacyverklaring</a>
+        <a href="#cookies" data-jump>Cookies</a>
+        <a href="#voorwaarden" data-jump>Algemene voorwaarden</a>
+      </aside>
+
+      <div class="legal-body">
+
+        <article class="doc rev" id="privacyverklaring">
+          <h2>Privacyverklaring</h2>
+          <p class="upd">Laatst bijgewerkt: 29 oktober 2026</p>
+
+          <h3>Wie zijn wij</h3>
+          <p>Mosae Solutions is gevestigd in Maastricht en ingeschreven bij de Kamer van Koophandel onder nummer 00000000. Wij zijn verantwoordelijk voor de verwerking van persoonsgegevens zoals beschreven in deze verklaring. U bereikt ons via <strong>info@mosaesolutions.nl</strong> of <strong>+31 6 39 89 34 66</strong>.</p>
+
+          <h3>Welke gegevens we verwerken</h3>
+          <p>Als u contact met ons opneemt via het formulier, per e-mail of telefonisch, verwerken we:</p>
+          <ul>
+            <li>uw naam en bedrijfsnaam;</li>
+            <li>uw e-mailadres en telefoonnummer;</li>
+            <li>de dienst waarin u geïnteresseerd bent en de inhoud van uw bericht.</li>
+          </ul>
+          <p>Werkt u met ons samen, dan verwerken we daarnaast de gegevens die nodig zijn voor de opdracht en de facturatie, zoals adres- en betaalgegevens.</p>
+
+          <h3>Waarom we deze gegevens gebruiken</h3>
+          <ul>
+            <li>om uw vraag te beantwoorden en een voorstel te maken;</li>
+            <li>om de overeengekomen diensten uit te voeren;</li>
+            <li>om te factureren en te voldoen aan wettelijke verplichtingen, zoals de fiscale bewaarplicht.</li>
+          </ul>
+          <p>Neemt u contact met ons op, dan verwerken we uw gegevens om uw vraag te beantwoorden en een voorstel te maken, omdat u ons daarom vraagt met het oog op een mogelijke overeenkomst. Voor het uitvoeren van onze diensten is de grondslag de overeenkomst met u, voor facturatie onze wettelijke verplichting, en voor het beveiligen van onze website ons gerechtvaardigd belang. We gebruiken uw gegevens niet voor geautomatiseerde besluitvorming met rechtsgevolgen voor u.</p>
+
+          <h3>Hoe lang we gegevens bewaren</h3>
+          <p>We bewaren gegevens niet langer dan nodig. Contactaanvragen zonder vervolg verwijderen we uiterlijk na 12 maanden. Administratieve gegevens bewaren we 7 jaar, zoals de wet voorschrijft.</p>
+
+          <h3>Delen met anderen</h3>
+          <p>We verkopen uw gegevens nooit. We delen ze alleen met partijen die ons helpen onze diensten te leveren:</p>
+          <ul>
+            <li><strong>GitHub</strong> (GitHub Pages) voor het hosten van deze website. GitHub is onderdeel van Microsoft en gevestigd in de Verenigde Staten. Microsoft is aangesloten bij het EU-VS Data Privacy Framework, waardoor doorgifte van gegevens naar de VS is toegestaan.</li>
+            <li>Een formulierdienst die de berichten uit ons contactformulier bij ons aflevert.</li>
+            <li>Onze e-mailprovider en boekhoudsoftware.</li>
+          </ul>
+          <p>Met deze partijen maken we afspraken over de bescherming van uw gegevens.</p>
+          <p>Bij <strong>website care</strong> en <strong>AI-opvolging</strong> verwerken wij ook gegevens van de klanten en websitebezoekers van onze opdrachtgevers, bijvoorbeeld berichten die via hun contactformulier binnenkomen. In dat geval is de opdrachtgever verantwoordelijk voor die gegevens en treden wij op als verwerker. Dit leggen we met elke opdrachtgever vast in een verwerkersovereenkomst.</p>
+
+          <h3>Serverlogs</h3>
+          <p>Bij het bezoeken van deze website slaat onze hostingpartij technische gegevens op, zoals uw IP-adres en het tijdstip van uw bezoek. Deze gegevens worden alleen gebruikt om de website veilig en goed werkend te houden.</p>
+
+          <h3>Beveiliging</h3>
+          <p>We nemen passende technische en organisatorische maatregelen om uw gegevens te beschermen tegen verlies en onbevoegde toegang, zoals versleutelde verbindingen en beperkte toegangsrechten.</p>
+
+          <h3>Externe diensten op deze website</h3>
+          <p>Deze website laadt lettertypes via Google Fonts. Uw browser maakt daarvoor verbinding met servers van Google, waarbij uw IP-adres aan Google wordt doorgegeven. Google kan deze gegevens ook buiten de Europese Unie verwerken. Er worden hierbij geen cookies geplaatst.</p>
+
+          <h3>Uw rechten</h3>
+          <p>U heeft het recht om uw gegevens in te zien, te laten corrigeren of verwijderen, de verwerking te beperken, bezwaar te maken en uw gegevens over te laten dragen. Stuur hiervoor een e-mail naar info@mosaesolutions.nl. We reageren binnen één maand. Bent u niet tevreden over hoe we met uw gegevens omgaan, dan kunt u een klacht indienen bij de <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener">Autoriteit Persoonsgegevens</a>.</p>
+        </article>
+
+        <article class="doc rev" id="cookies">
+          <h2>Cookies</h2>
+          <p class="upd">Laatst bijgewerkt: 29 oktober 2026</p>
+          <p>Deze website gebruikt alleen functionele cookies die nodig zijn om de site goed te laten werken. Gaan we in de toekomst analytische of marketingcookies gebruiken, bijvoorbeeld voor Google Analytics of advertenties, dan vragen we daar eerst uw toestemming voor en passen we deze verklaring aan. De lettertypes op deze site worden geladen via Google Fonts; meer daarover leest u hierboven onder "Externe diensten op deze website".</p>
+        </article>
+
+        <article class="doc rev" id="voorwaarden">
+          <h2>Algemene voorwaarden</h2>
+          <p class="upd">Laatst bijgewerkt: 29 oktober 2026</p>
+
+          <h3>Begrippen</h3>
+          <ul>
+            <li><strong>Mosae Solutions:</strong> de onderneming die de diensten levert, ook aangeduid als "wij" of "ons".</li>
+            <li><strong>Opdrachtgever:</strong> het bedrijf of de organisatie die met ons een overeenkomst sluit.</li>
+            <li><strong>Abonnement:</strong> de overeenkomst waarbij wij tegen een vast maandbedrag een website leveren, inclusief website care.</li>
+            <li><strong>Website care:</strong> het onderhoud van de website, zoals omschreven in artikel 7.</li>
+            <li><strong>Content:</strong> alle teksten, afbeeldingen, logo's en ander materiaal op de website.</li>
+          </ul>
+
+          <h3>1. Toepasselijkheid</h3>
+          <p>Deze voorwaarden gelden voor alle offertes, opdrachten en overeenkomsten tussen Mosae Solutions en de opdrachtgever, voor webdesign &amp; care, AI-opvolging en andere diensten. Afwijkingen gelden alleen als we die schriftelijk hebben afgesproken.</p>
+          <p>Mosae Solutions werkt uitsluitend voor bedrijven en organisaties. De opdrachtgever handelt bij het aangaan van de overeenkomst in de uitoefening van een beroep of bedrijf en is geen consument. Het consumentenrecht, zoals het herroepingsrecht van 14 dagen, is daarom niet van toepassing.</p>
+
+          <h3>2. Offertes en opdrachten</h3>
+          <p>Onze offertes zijn 30 dagen geldig. Een opdracht komt tot stand zodra de opdrachtgever de offerte schriftelijk of per e-mail heeft geaccepteerd.</p>
+
+          <h3>3. Uitvoering</h3>
+          <p>We voeren opdrachten zorgvuldig en naar beste kunnen uit. De opdrachtgever zorgt tijdig voor de informatie, toegang en materialen die we nodig hebben. Opgegeven termijnen gaan in zodra wij alle benodigde informatie en materialen van de opdrachtgever hebben ontvangen. Het zijn inschattingen, geen fatale termijnen.</p>
+
+          <h3>4. Prijzen en betaling</h3>
+          <p>Alle prijzen zijn exclusief btw. De eerste factuur voor een websiteabonnement sturen we na afloop van de proefmaand. Zet de opdrachtgever het abonnement voort, dan omvat die eerste factuur ook het maandbedrag over de proefmaand en eventuele opstartkosten. Daarna factureren we abonnementen maandelijks vooraf. Facturen betaalt u binnen 14 dagen na factuurdatum.</p>
+          <p>Tijdens een vaste looptijd van één jaar blijft de afgesproken prijs gelijk. Voor abonnementen die maandelijks doorlopen, mag Mosae Solutions de prijzen aanpassen, bijvoorbeeld vanwege inflatie of gestegen kosten. Een prijswijziging melden we minimaal één maand van tevoren.</p>
+          <p>Is een factuur niet op tijd betaald, dan sturen we elke week een herinnering. Is de factuur vier weken na de vervaldatum nog steeds niet betaald, dan mogen we de wettelijke handelsrente en buitengerechtelijke incassokosten in rekening brengen. Zolang er niet is betaald, mogen we daarnaast naar eigen keuze onze werkzaamheden opschorten en de website tijdelijk offline halen.</p>
+
+          <h3>5. Looptijd, proefmaand en opzegging</h3>
+          <p>Websiteabonnementen, inclusief website care, hebben een looptijd van één jaar vanaf de afgesproken startdatum. De eerste maand geldt als proefperiode. Deze begint op de dag dat we met de opdracht starten; het ontwerp, de bouw en het verwerken van feedback vallen dus binnen deze maand. Tot het einde van de proefmaand kan de opdrachtgever het abonnement kosteloos opzeggen. Er wordt dan niets in rekening gebracht: geen maandbedrag en geen opstartkosten.</p>
+          <p>Na de proefmaand ligt de looptijd van één jaar vast en is tussentijds opzeggen niet mogelijk. In bijzondere situaties kan de opdrachtgever contact met ons opnemen; dan bekijken we samen of er een oplossing mogelijk is.</p>
+          <p>Na het eerste jaar loopt het abonnement maandelijks door met een opzegtermijn van één maand, tenzij de opdrachtgever kiest voor een nieuwe looptijd van één jaar tegen een gereduceerd tarief. Opzeggen gebeurt schriftelijk of per e-mail, uiterlijk één maand voor het einde van de looptijd. Abonnementen voor AI-opvolging lopen maandelijks door met een opzegtermijn van één maand, tenzij in de offerte iets anders is afgesproken.</p>
+
+          <h3>6. Einde van het abonnement</h3>
+          <p>Voordat het abonnement eindigt, sturen we de opdrachtgever een herinnering. Wil de opdrachtgever de website overnemen, dan maken we daar vóór het einde van het abonnement afspraken over. Bij overname worden ook de teksten die wij voor de website hebben geschreven van de opdrachtgever.</p>
+          <p>Neemt de opdrachtgever de website niet over, dan verwijderen we 30 dagen na het einde van het abonnement de website en alle bijbehorende content, inclusief de teksten die wij hebben geschreven. Een domeinnaam die wij voor de opdrachtgever hebben geregistreerd, zeggen we dan op, tenzij de opdrachtgever die wil overnemen. Een domeinnaam die de opdrachtgever zelf al had, blijft altijd van de opdrachtgever.</p>
+
+          <h3>7. Website care</h3>
+          <p>Website care omvat hosting, een SSL-certificaat, updates, back-ups, beveiliging en monitoring, en het doorvoeren van wijzigingen op verzoek. Daarnaast voeren we elke maand een snelheidscheck uit en laten we de opdrachtgever maandelijks zien wat de website oplevert. Hoeveel wijzigingen we doorvoeren, hangt af van de omvang ervan en van wat we met de opdrachtgever hebben afgesproken. Wijzigingen voeren we in de regel binnen één tot twee weken door; in drukke periodes kan dat langer duren. Afwijkende afspraken leggen we vast in de offerte.</p>
+          <p>Het uitbreiden van een website, zoals het toevoegen van één of meer nieuwe pagina's, valt niet onder website care. Uitbreidingen en andere aanvullende werkzaamheden doen we altijd in overleg, tegen een prijs die we vooraf afspreken.</p>
+          <p>We streven ernaar dat websites altijd bereikbaar zijn. Door storingen, onderhoud of overmacht kunnen we een beschikbaarheid van 100% echter niet garanderen.</p>
+
+          <h3>8. Resultaten en aanvullende diensten</h3>
+          <p>Omdat resultaten afhangen van de markt, het aanbod van de opdrachtgever en externe platforms, geven we geen garantie op bepaalde aantallen bezoekers, aanvragen of omzet. Spreken we aanvullende diensten af, zoals social media of online marketing, dan leggen we de afspraken daarover vast in de offerte.</p>
+
+          <h3>9. Intellectueel eigendom en aangeleverd materiaal</h3>
+          <p>Teksten, foto's, logo's en ander materiaal dat de opdrachtgever aanlevert, blijven van de opdrachtgever. De opdrachtgever garandeert dat hij dit materiaal mag gebruiken en dat het geen rechten van anderen schendt. Blijkt dat niet zo te zijn, dan is de opdrachtgever daarvoor zelf aansprakelijk en vrijwaart hij Mosae Solutions voor aanspraken van derden.</p>
+          <p>Websites die we als abonnement leveren, inclusief de teksten die wij schrijven, blijven eigendom van Mosae Solutions zolang het abonnement loopt. Voor overname geldt artikel 6. Wil de opdrachtgever een website kopen zonder abonnement en zonder website care, dan leggen we de afspraken en de prijs daarvoor apart vast in de offerte. Software, systemen en werkwijzen die wij gebruiken voor onder meer AI-opvolging blijven eigendom van Mosae Solutions of onze leveranciers.</p>
+
+          <h3>10. Aansprakelijkheid</h3>
+          <p>Onze aansprakelijkheid is beperkt tot directe schade en tot maximaal het bedrag dat de opdrachtgever in de drie maanden voor het ontstaan van de schade aan ons heeft betaald. We zijn niet aansprakelijk voor indirecte schade, zoals gederfde omzet of winst.</p>
+
+          <h3>11. Overmacht</h3>
+          <p>Bij overmacht, zoals storingen bij externe platforms, hostingpartijen of internetproviders, zijn we niet gehouden onze verplichtingen na te komen zolang de overmacht duurt.</p>
+
+          <h3>12. Geheimhouding</h3>
+          <p>We gaan vertrouwelijk om met alle informatie die we van de opdrachtgever ontvangen, zoals bedrijfsgegevens, inloggegevens en klantinformatie. We delen deze informatie niet met anderen, tenzij dat nodig is voor het uitvoeren van de opdracht of wettelijk verplicht is.</p>
+
+          <h3>13. Wijziging van deze voorwaarden</h3>
+          <p>Mosae Solutions mag deze voorwaarden wijzigen. Wijzigingen melden we minimaal één maand voordat ze ingaan. Voor een lopende vaste looptijd van één jaar blijven de voorwaarden gelden zoals ze bij het afsluiten waren, tenzij de opdrachtgever met de wijziging instemt.</p>
+
+          <h3>14. Toepasselijk recht</h3>
+          <p>Op alle overeenkomsten is Nederlands recht van toepassing. Geschillen leggen we voor aan de bevoegde rechter in het arrondissement Limburg.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a href="#home" class="logo" data-nav aria-label="Mosae Solutions, naar home">
+          <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="4" fill="var(--signal)"/><path d="M8 25V10l9 9 9-9v15" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="miter"/></svg>
+          <span class="wm">MOSAE<small>solutions</small></span>
+        </a>
+        <p style="margin-top:16px;font-size:14.5px;max-width:34ch">Websites die werken en onderhoud dat geregeld is, voor bedrijven van elke omvang.</p>
+      </div>
+      <div>
+        <h4>Diensten</h4>
+        <div class="fnav">
+          <a href="#webdesign" data-nav>Webdesign &amp; care</a>
+          <a href="#ai" data-nav>AI-opvolging</a>
+          <a href="#werkwijze" data-nav>Werkwijze</a>
+        </div>
+      </div>
+      <div>
+        <h4>Bedrijf</h4>
+        <div class="fnav">
+          <a href="#home" data-nav>Home</a>
+          <a href="#projecten" data-nav>Projecten</a>
+          <a href="#over" data-nav>Over ons</a>
+          <a href="#contact" data-nav>Contact</a>
+          <a href="#privacy" data-nav>Privacy &amp; voorwaarden</a>
+        </div>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="fmeta">
+          Maastricht, Limburg<br>
+          <a href="mailto:info@mosaesolutions.nl">info@mosaesolutions.nl</a><br>
+          <a href="tel:+31639893466">+31 6 39 89 34 66</a><br>
+          KVK 00000000 · BTW NL000000000B00
+        </div>
+      </div>
+    </div>
+    <div class="wordmark" aria-hidden="true">MOSAE</div>
+    <div class="fbottom">
+      <span>© 2026 Mosae Solutions</span>    </div>
+  </div>
+</footer>
+
+<script>
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Menu ---------- */
+  var menu = $('menu');
+  var hamb = $('hamb');
+  function closeMenu(returnFocus){
+    if (!menu.classList.contains('open')) return;
+    menu.classList.remove('open');
+    hamb.setAttribute('aria-expanded', 'false');
+    if (returnFocus) hamb.focus();
+  }
+  hamb.addEventListener('click', function(){
+    var open = menu.classList.toggle('open');
+    hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMenu(true); });
+  document.addEventListener('click', function(e){ if (!menu.contains(e.target)) closeMenu(false); });
+
+  /* ---------- Pagina's ---------- */
+  var pages = document.querySelectorAll('.page');
+  var names = ['home','webdesign','ai','werkwijze','projecten','over','contact','privacy'];
+  var legacy = { diensten:'ai', marketing:'webdesign', prijzen:'werkwijze' };   // oude links blijven werken
+  var titles = {
+    home:'Mosae Solutions · Webdesign en website care',
+    webdesign:'Webdesign & care · Mosae Solutions',
+    ai:'AI-opvolging, coming soon · Mosae Solutions',
+    werkwijze:'Werkwijze · Mosae Solutions',
+    projecten:'Projecten · Mosae Solutions',
+    over:'Over ons · Mosae Solutions',
+    contact:'Contact · Mosae Solutions',
+    privacy:'Privacy & voorwaarden · Mosae Solutions'
+  };
+  pages.forEach(function(p){
+    p.querySelectorAll('.rev').forEach(function(el, i){ el.style.setProperty('--i', Math.min(i, 10)); });
+  });
+
+  function showPage(name){
+    name = legacy[name] || name;
+    if (names.indexOf(name) === -1) name = 'home';
+    var target = $('page-' + name);
+    pages.forEach(function(p){ p.classList.remove('active', 'entering'); });
+    target.classList.add('active');
+    void target.offsetWidth;
+    target.classList.add('entering');
+    document.querySelectorAll('[data-nav]').forEach(function(a){
+      a.classList.toggle('curr', a.getAttribute('href') === '#' + name);
+    });
+    menu.classList.remove('open');
+    hamb.setAttribute('aria-expanded', 'false');
+    document.title = titles[name];
+    try { window.scrollTo(0, 0); } catch (err) {}
+    return name;
+  }
+
+  document.addEventListener('click', function(e){
+    var jump = e.target.closest('[data-jump]');
+    if (jump) {
+      e.preventDefault();
+      var el = document.querySelector(jump.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      return;
+    }
+    var link = e.target.closest('[data-nav]');
+    if (!link) return;
+    e.preventDefault();
+    var name = showPage((link.getAttribute('href') || '#home').slice(1));
+    if (link.dataset.dienst) {
+      ['iWebdesign','iAi','iOverig'].forEach(function(id){ $(id).checked = $(id).value === link.dataset.dienst; });
+    }
+    try { history.pushState(null, '', '#' + name); } catch (err) {}
+  });
+  window.addEventListener('popstate', function(){ showPage(location.hash.slice(1)); });
+
+  /* ---------- Home: route van ontwerp tot klant ---------- */
+  var stageEls = document.querySelectorAll('#stages .stage'), stageIdx = 0;
+  if (!reduceMotion) setInterval(function(){
+    if (document.hidden) return;
+    stageIdx = (stageIdx + 1) % (stageEls.length + 1);
+    stageEls.forEach(function(s, i){ s.classList.toggle('on', i < stageIdx || (stageIdx === 0 && i === 0)); });
+  }, 1100);
+
+  /* ---------- AI: voorproefje ---------- */
+  var leads = [
+    { tijd:'22:47', titel:'Offerte warmtepomp', meta:'R. Janssen · Venlo · via websiteformulier', sec:38, kanaal:'WhatsApp',
+      reply:'Goedenavond! Bedankt voor uw aanvraag voor een warmtepomp. Komt een opname bij u thuis uit? Donderdag 09:30 is nog vrij.',
+      booked:'In agenda: do 09:30 · opname op locatie' },
+    { tijd:'06:12', titel:'Zonnepanelen, 14 stuks', meta:'M. Coenen · Sittard · via websiteformulier', sec:44, kanaal:'e-mail',
+      reply:'Goedemorgen, bedankt voor uw aanvraag. Voor een goede offerte kijken we graag even naar uw dak. Past vrijdag 13:00?',
+      booked:'In agenda: vr 13:00 · dakinspectie' },
+    { tijd:'zo 11:05', titel:'Airco slaapkamer + woonkamer', meta:'S. de Vries · Eindhoven · terugbelverzoek', sec:29, kanaal:'WhatsApp',
+      reply:'Bedankt! We bellen u maandag om 08:30 terug. Wilt u alvast foto’s van beide ruimtes sturen? Dat kan hier.',
+      booked:'Terugbelafspraak: ma 08:30' }
+  ];
+  var cur = 0;
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  function play(l){
+    $('cTime').textContent = 'Ontvangen ' + l.tijd;
+    $('cTitle').textContent = l.titel;
+    $('cMeta').textContent = l.meta;
+    $('cReply').classList.remove('show');
+    $('cBooked').classList.remove('show');
+    $('cTimer').textContent = '00:00';
+    $('cBar').style.width = '0%';
+    var start = performance.now(), dur = 1900;
+    function frame(now){
+      var t = Math.min(1, (now - start) / dur);
+      var s = Math.round(l.sec * t);
+      $('cTimer').textContent = '00:' + pad(s);
+      $('cBar').style.width = (s / 60 * 100) + '%';
+      if (t < 1) { requestAnimationFrame(frame); return; }
+      $('cReplyText').textContent = l.reply;
+      $('cReplyMeta').textContent = 'Verzonden via ' + l.kanaal + ' · ' + l.sec + ' sec na ontvangst';
+      setTimeout(function(){ $('cReply').classList.add('show'); }, 150);
+      setTimeout(function(){ $('cBookedText').textContent = l.booked; $('cBooked').classList.add('show'); }, 900);
+      setTimeout(next, 5200);
+    }
+    requestAnimationFrame(frame);
+  }
+  function next(){
+    if (document.hidden || !$('page-ai').classList.contains('active')) { setTimeout(next, 1500); return; }
+    cur = (cur + 1) % leads.length;
+    play(leads[cur]);
+  }
+  if (!reduceMotion) setTimeout(next, 4000);
+
+  showPage(location.hash.slice(1));
+
+  /* ---------- Contactformulier ---------- */
+  var f = $('demoForm');
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var naam = f.naam.value.trim(), email = f.email.value.trim();
+    var ok = $('demoOk');
+    if (!naam || !email) { ok.style.color = 'var(--signal-hot)'; ok.textContent = 'Vul minimaal uw naam en e-mailadres in.'; return; }
+    // TODO: koppel dit aan je eigen Make-webhook of mailbox.
+    ok.style.color = 'var(--ok)';
+    ok.textContent = 'Bedankt, ' + naam + '! Uw bericht is verstuurd. U hoort binnen 1 werkdag van ons.';
+    f.reset();
+  });
+</script>
+</body>
+</html>
