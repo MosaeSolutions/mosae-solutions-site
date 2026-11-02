@@ -385,7 +385,9 @@
   .pick input:checked + span::before{background:var(--signal);border-color:var(--signal)}
   .pick input:focus-visible + span{outline:2px solid var(--signal-hot);outline-offset:2px}
   .form .btn{width:100%;margin-top:4px;padding-block:16px}
+  .form .btn[disabled]{opacity:.6;cursor:wait}
   .form .ok{min-height:1.4em;font-size:14.5px;font-weight:600;color:var(--ok)}
+  .form .botcheck{display:none}
 
   /* FOOTER */
   footer{border-top:1px solid var(--line);background:var(--ink);color:var(--ash)}
@@ -931,7 +933,10 @@
       </div>
       <div class="form rev">
         <h3>Stuur een bericht</h3>
-        <form id="demoForm" novalidate>
+        <form id="contactForm" action="https://api.web3forms.com/submit" method="POST" novalidate>
+          <input type="hidden" name="access_key" value="6b59e8c1-b8ba-4cfb-a288-66539429ca37">
+          <input type="hidden" name="subject" value="Nieuwe aanvraag via mosaesolutions.nl">
+          <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
           <fieldset>
             <legend>Waar bent u in geïnteresseerd? Eén of meer</legend>
             <div class="picks">
@@ -950,7 +955,7 @@
           </div>
           <label for="fBericht">Waar kunnen we u mee helpen?<textarea id="fBericht" name="bericht" rows="4" placeholder="Bijv. een nieuwe website, of geen aanvragen meer missen"></textarea></label>
           <button type="submit" class="btn btn-red">Verstuur bericht <span class="arr">→</span></button>
-          <p class="ok" id="demoOk" role="status" aria-live="polite"></p>
+          <p class="ok" id="formMsg" role="status" aria-live="polite"></p>
           <p class="fine">Lees in onze <a href="#privacy" data-nav>privacyverklaring</a> hoe we met uw gegevens omgaan. We werken uitsluitend voor bedrijven en organisaties.</p>
         </form>
       </div>
@@ -974,7 +979,7 @@
 
         <article class="doc rev" id="privacyverklaring">
           <h2>Privacyverklaring</h2>
-          <p class="upd">Laatst bijgewerkt: 29 oktober 2026</p>
+          <p class="upd">Laatst bijgewerkt: 3 november 2026</p>
 
           <h3>Wie zijn wij</h3>
           <p>Mosae Solutions is gevestigd in Maastricht en ingeschreven bij de Kamer van Koophandel onder nummer 00000000. Wij zijn verantwoordelijk voor de verwerking van persoonsgegevens zoals beschreven in deze verklaring. U bereikt ons via <strong>info@mosaesolutions.nl</strong> of <strong>+31 6 39 89 34 66</strong>.</p>
@@ -1003,7 +1008,7 @@
           <p>We verkopen uw gegevens nooit. We delen ze alleen met partijen die ons helpen onze diensten te leveren:</p>
           <ul>
             <li><strong>GitHub</strong> (GitHub Pages) voor het hosten van deze website. GitHub is onderdeel van Microsoft en gevestigd in de Verenigde Staten. Microsoft is aangesloten bij het EU-VS Data Privacy Framework, waardoor doorgifte van gegevens naar de VS is toegestaan.</li>
-            <li>Een formulierdienst die de berichten uit ons contactformulier bij ons aflevert.</li>
+            <li><strong>Web3Forms</strong> voor het afleveren van berichten uit ons contactformulier in onze mailbox. Web3Forms is gevestigd in India en verwerkt de gegevens als verwerker, op basis van een verwerkersovereenkomst. Voor de doorgifte buiten de EU gelden de standaardcontractbepalingen van de Europese Commissie. Om spam tegen te houden kan Web3Forms uw IP-adres en e-mailadres laten controleren door een spamfilter.</li>
             <li>Onze e-mailprovider en boekhoudsoftware.</li>
           </ul>
           <p>Met deze partijen maken we afspraken over de bescherming van uw gegevens.</p>
@@ -1272,16 +1277,47 @@
   showPage(location.hash.slice(1));
 
   /* ---------- Contactformulier ---------- */
-  var f = $('demoForm');
+  // Berichten gaan via Web3Forms naar onze mailbox. Zonder JavaScript post het formulier er direct naartoe.
+  var f = $('contactForm'), msg = $('formMsg'), sendBtn = f.querySelector('button[type=submit]');
+  var sendLabel = sendBtn.innerHTML;
+  function say(text, good){ msg.style.color = good ? 'var(--ok)' : 'var(--signal-hot)'; msg.textContent = text; }
   f.addEventListener('submit', function(e){
     e.preventDefault();
     var naam = f.naam.value.trim(), email = f.email.value.trim();
-    var ok = $('demoOk');
-    if (!naam || !email) { ok.style.color = 'var(--signal-hot)'; ok.textContent = 'Vul minimaal uw naam en e-mailadres in.'; return; }
-    // TODO: koppel dit aan je eigen Make-webhook of mailbox.
-    ok.style.color = 'var(--ok)';
-    ok.textContent = 'Bedankt, ' + naam + '! Uw bericht is verstuurd. U hoort binnen 1 werkdag van ons.';
-    f.reset();
+    if (!naam || !email) { say('Vul minimaal uw naam en e-mailadres in.'); return; }
+    if (!f.email.checkValidity()) { say('Vul een geldig e-mailadres in.'); return; }
+    var diensten = [].map.call(f.querySelectorAll('input[name=dienst]:checked'), function(c){ return c.nextElementSibling.textContent; });
+    var data = {
+      access_key: f.access_key.value,
+      subject: f.subject.value,
+      from_name: naam + ' via mosaesolutions.nl',
+      replyto: email,
+      botcheck: f.botcheck.checked,
+      'Naam': naam,
+      'Bedrijf': f.bedrijf.value.trim() || '-',
+      'E-mail': email,
+      'Telefoon': f.telefoon.value.trim() || '-',
+      'Interesse': diensten.join(', ') || 'Niet aangegeven',
+      'Bericht': f.bericht.value.trim() || '-'
+    };
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Bezig met versturen…';
+    say('', true);
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(r){
+      return r.json().then(function(res){ if (!r.ok || !res.success) throw new Error(res.message); });
+    }).then(function(){
+      say('Bedankt, ' + naam + '! Uw bericht is verstuurd. U hoort binnen 1 werkdag van ons.', true);
+      f.reset();
+    }).catch(function(){
+      say('Het versturen is niet gelukt. Probeer het nog eens, of mail ons op info@mosaesolutions.nl.');
+    }).then(function(){
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = sendLabel;
+    });
   });
 </script>
 </body>
